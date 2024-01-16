@@ -35,11 +35,15 @@ def convert_notebooks_to_scripts(notebook_list):
         arquivos_convertidos.append(f"{notebook_path.name} | to -> {output_script.name}")
         output, resources = exporter.from_filename(notebook)
 
-       # Substitui o método display por print no script convertido
+        # Substitui o método display por print no script convertido
         output_with_replacement = re.sub(r'(^|\b)display\(', '\\1print(', output)
        
-       # Comenta todas as chamadas de dfSummary() no script convertido
+        # Comenta todas as chamadas de dfSummary() no script convertido
         output_with_comments = re.sub(r'(^|.+|\b)dfSummary\((\)|[^)]+\))', r'# \g<0>', output_with_replacement)
+       
+        # Comenta todas as chamadas de %matplotlib no script convertido
+        # Adicionando comentário à linha com %matplotlib inline
+        output_with_comments = re.sub(r'(^|\s*)%matplotlib inline', r'# %matplotlib inline', output_with_comments)
 
         # Comenta todas as chamadas de get_ipython().run_line_magic() no script convertido
         output_with_comments = re.sub(r'get_ipython\(\)\.run_line_magic\([^)]+\)', '# \\g<0>', output_with_comments)
